@@ -3,7 +3,7 @@ import Sidebar from './Sidebar';
 import Header from './Header';
 
 
-const AppLayout = () => {
+const AppLayout = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
