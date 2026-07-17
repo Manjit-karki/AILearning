@@ -5,7 +5,7 @@ import {
   FileText,
   User,
   LogOut,
-  BrainCircuit,
+  Pencil,
   BookOpen,
   X,
 } from "lucide-react";
@@ -42,7 +42,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
         <div className="flex items-center justify-between h-16 px-5 border-b border-slate-200/60 ">
           <div className="flex items-center gap-3">
             <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-linear-to-br from-emerald-400 to-teal-500 shadow-md shadow-emerald-500/20">
-              <BrainCircuit
+              <Pencil
                 className="text-white"
                 size={20}
                 strokeWidth={2.5}

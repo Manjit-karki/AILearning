@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
 import authService from "../../services/authService.js";
-import { BrainCircuit, Mail, Lock, ArrowRight } from "lucide-react";
+import { Pencil, Mail, Lock, ArrowRight } from "lucide-react";
 import toast from 'react-hot-toast';
 
 const LoginPage = () => {
@@ -16,8 +16,18 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
+  const isValidEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!isValidEmail(email)) {
+    setError("Please enter a valid email address.");
+    return;
+    }
+    
     setError('');
     setLoading(true);
     try{
@@ -43,7 +53,7 @@ const LoginPage = () => {
             {/* Header */}
           <div className="text-center mb-10">
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-500 shadow-lg shadow-emerald-500/25 mb-6">
-              <BrainCircuit className="w-7 h-7 text-white" strokeWidth={2} />
+              <Pencil className="w-7 h-7 text-white" strokeWidth={2} />
             </div>
             <h1 className="text-2xl font-medium text-slate-900 tracking-tight mb-2">
               Welcome Back

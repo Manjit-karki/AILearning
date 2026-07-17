@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import authService from "../../services/authService";
-import { BrainCircuit, User, Mail, Lock, ArrowRight } from "lucide-react";
+import { Pencil, User, Mail, Lock, ArrowRight } from "lucide-react";
 import toast from "react-hot-toast";
 
 const RegisterPage = () => {
@@ -14,8 +14,17 @@ const RegisterPage = () => {
 
   const navigate = useNavigate();
 
+  const isValidEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!isValidEmail(email)) {
+    setError("Please enter a valid email address.");
+    return;
+    }
 
     if (password.length < 6) {
       setError("Password must be at least 6 characters long.");
@@ -47,7 +56,7 @@ const RegisterPage = () => {
             {/* Header */}
           <div className="text-center mb-10">
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-500 shadow-lg shadow-emerald-500/25 mb-6">
-              <BrainCircuit className="w-7 h-7 text-white" strokeWidth={2} />
+              <Pencil className="w-7 h-7 text-white" strokeWidth={2} />
             </div>
             <h1 className="text-2xl font-medium text-slate-900 tracking-tight mb-2">
               Create an Account
