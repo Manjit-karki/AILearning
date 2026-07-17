@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Spinner from "../../Components/common/Spinner";
 import progressService from "../../services/progressService";
-import toast from "react-hot-toast";
+//import toast from "react-hot-toast";
 import {
   FileText,
   BookOpen,
@@ -18,11 +18,11 @@ const DashboardPage = () => {
     const fetchDashboardData = async () => {
       try {
         const data = await progressService.getDashboardData();
-        console.log("Data___getDashboardData", data);
+        console.log("Data__getDashboardData", data);
 
         setDashboardData(data.data);
       } catch (error) {
-        toast.error("Failed to fetch dashboard data.");
+        //toast.error("Failed to fetch dashboard data.");
         console.error(error);
       } finally {
         setLoading(false);
