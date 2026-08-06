@@ -1,7 +1,7 @@
 package com.example.Backend.controller;
 
 import com.example.Backend.model.SUser;
-import com.example.Backend.repository.userRepository;
+import com.example.Backend.repository.UserRepository;
 import com.example.Backend.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final userRepository userRepo;
+    private final UserRepository userRepo;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
