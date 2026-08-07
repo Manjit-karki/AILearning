@@ -26,7 +26,6 @@ public class QuizGenService {
         this.quizService = quizService;
     }
 
-
      //Generates questions using Spring AI given a raw context string.
     public List<questions> generateQuestionsFromContext(String context, int count) {
         return this.chatClient.prompt()
