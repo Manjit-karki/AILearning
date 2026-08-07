@@ -37,9 +37,11 @@ public class QuizGenService {
                         Text: "{context}"
                         
                         For each item, map to these exact fields:
-                        - "questionText": The clear question statement.
+                        - "question": The clear question statement.
                         - "options": A list of multiple-choice options.
                         - "correctAnswer": The correct answer choice string.
+                        - "explanation" : A brief explanation of why the correct answer is right.
+                        - "difficulty": One of the following exact string values: "EASY", "MEDIUM", or "HARD".
                         """)
                         .param("count", String.valueOf(count))
                         .param("context", context))
