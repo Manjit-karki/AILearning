@@ -31,7 +31,7 @@ public class FlashcardGenService {
                             For each item in the array, provide:
                             - "question": A concise question.
                             - "answer": The correct answer.
-                            - "difficulty": One of the following exact string values: "EASY", "MEDIUM", or "HIGH".
+                            - "difficulty": One of the following exact string values: "EASY", "MEDIUM", or "HARD".
                             """)
                             .param("count", String.valueOf(count))
                             .param("context", context))

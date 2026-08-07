@@ -1,11 +1,13 @@
 
 package com.example.Backend.controller;
 
+import com.example.Backend.ai.QuizGenService;
 import com.example.Backend.model.answer;
 import com.example.Backend.model.questions;
 import com.example.Backend.model.Quiz;
 import com.example.Backend.services.QuizService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -17,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +31,26 @@ import java.util.Map;
 public class QuizController {
 
     private final QuizService quizService;
+    private final QuizGenService quizGenService; // Injected AI service
+
+    @PostMapping("/generate")
+    public ResponseEntity<ApiResponse<Quiz>> generateQuiz(
+            @Valid @RequestBody GenerateQuizRequest req,
+            @AuthenticationPrincipal UserDetails user) {
+        try {
+            Quiz quiz = quizGenService.generateAndSaveFromVectorStore(
+                    userId(user),
+                    req.getDocumentId(),
+                    req.getTitle(),
+                    req.getTopic(),
+                    req.getCount()
+            );
+            return ResponseEntity.ok(ApiResponse.ok(quiz, "Quiz generated successfully"));
+        } catch (Exception e) {
+            log.error("generateQuiz: {}", e.getMessage());
+            return ResponseEntity.status(500).body(ApiResponse.error(500, e.getMessage()));
+        }
+    }
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<Quiz>>> getAllQuizzes(
@@ -68,24 +91,24 @@ public class QuizController {
         }
     }
 
-
     @GetMapping("/{id}/results")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getQuizResults(
             @PathVariable String id,
             @AuthenticationPrincipal UserDetails user) {
         try {
             Quiz quiz = quizService.getById(id, userId(user));
+            List<answer> userAnswers = quiz.getUserAnswers() != null ? quiz.getUserAnswers() : Collections.emptyList();
 
             List<Map<String, Object>> questionResults = quiz.getQuestions().stream()
                     .map(q -> {
                         int idx = quiz.getQuestions().indexOf(q);
-                        answer userAnswer = quiz.getUserAnswers().stream()
+                        answer userAnswer = userAnswers.stream()
                                 .filter(a -> a.getQuestionIndex() == idx)
                                 .findFirst().orElse(null);
 
                         Map<String, Object> r = new LinkedHashMap<>();
-                        r.put("questionIndex",   idx);
-                        r.put("question",        q.getQuestion());
+                        r.put("questionIndex",  idx);
+                        r.put("questionText",    q.getQuestion());
                         r.put("options",         q.getOptions());
                         r.put("correctAnswer",   q.getCorrectAnswer());
                         r.put("explanation",     q.getExplanation());
@@ -105,7 +128,7 @@ public class QuizController {
             data.put("documentId",      quiz.getDocumentId());
             data.put("score",           quiz.getScore());
             data.put("totalQuestions",  quiz.getTotalQuestions());
-            data.put("totalAnswered",   quiz.getUserAnswers().size());
+            data.put("totalAnswered",   userAnswers.size());
             data.put("percentage",      percentage);
             data.put("isCompleted",     quiz.getCompletedAt() != null);
             data.put("completedAt",     quiz.getCompletedAt());
@@ -135,13 +158,14 @@ public class QuizController {
             if (idx < 0 || idx >= quiz.getQuestions().size())
                 return bad400("questionIndex must be between 0 and " + (quiz.getQuestions().size() - 1));
 
-            boolean alreadyAnswered = quiz.getUserAnswers().stream()
+            List<answer> existingAnswers = quiz.getUserAnswers() != null ? quiz.getUserAnswers() : Collections.emptyList();
+            boolean alreadyAnswered = existingAnswers.stream()
                     .anyMatch(a -> a.getQuestionIndex() == idx);
             if (alreadyAnswered)
                 return bad400("Question " + idx + " has already been answered");
 
             questions question = quiz.getQuestions().get(idx);
-            boolean isCorrect = req.getSelectedAnswer().equals(question.getCorrectAnswer());
+            boolean isCorrect = req.getSelectedAnswer().trim().equalsIgnoreCase(question.getCorrectAnswer().trim());
 
             answer answer = com.example.Backend.model.answer.builder()
                     .questionIndex(idx)
@@ -152,7 +176,7 @@ public class QuizController {
 
             quizService.submitAnswer(id, answer);
 
-            int newTotalAnswered = quiz.getUserAnswers().size() + 1;
+            int newTotalAnswered = existingAnswers.size() + 1;
             boolean isCompleted  = newTotalAnswered == quiz.getTotalQuestions();
             if (isCompleted) quizService.completeQuiz(id, userId);
 
@@ -173,7 +197,6 @@ public class QuizController {
             return ResponseEntity.status(500).body(ApiResponse.error(500, e.getMessage()));
         }
     }
-
 
     @PostMapping("/{id}/reset")
     public ResponseEntity<ApiResponse<Void>> resetQuiz(
@@ -203,6 +226,20 @@ public class QuizController {
         }
     }
 
+    @Data
+    static class GenerateQuizRequest {
+        @NotBlank(message = "documentId is required")
+        private String documentId;
+
+        @NotBlank(message = "title is required")
+        private String title;
+
+        @NotBlank(message = "topic is required")
+        private String topic;
+
+        @Min(value = 1, message = "count must be at least 1")
+        private int count = 5;
+    }
 
     @Data
     static class SubmitAnswerRequest {
@@ -212,7 +249,6 @@ public class QuizController {
         @NotBlank(message = "selectedAnswer is required")
         private String selectedAnswer;
     }
-
 
     private String userId(UserDetails u) { return u.getUsername(); }
 

@@ -93,12 +93,11 @@ public class FlashcardController {
             if (cardIndex < 0 || cardIndex >= set.getCards().size())
                 return bad400("cardIndex out of range");
 
-            boolean currentlyStarred = Boolean.TRUE.equals(
+            boolean willBeStarred = !Boolean.TRUE.equals(
                     set.getCards().get(cardIndex).getIsStarred());
-            boolean newStarred = !currentlyStarred;
 
-            Flashcard updated = flashcardService.getByUserAndDocument(uid, documentId);
-            String msg = newStarred ? "Card starred successfully" : "Card unstarred successfully";
+            Flashcard updated = flashcardService.toggleStar(uid, documentId, cardIndex);
+            String msg = willBeStarred ? "Card starred successfully" : "Card unstarred successfully";
             return ResponseEntity.ok(ApiResponse.ok(updated, msg));
         } catch (RuntimeException e) {
             if (notFound(e)) return notFound404("Flashcard set not found");
