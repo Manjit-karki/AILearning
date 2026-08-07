@@ -1,4 +1,4 @@
-package com.example.Backend;
+package com.example.Backend.test;
 
 import com.example.Backend.model.Difficulty;
 import com.example.Backend.model.Quiz;
