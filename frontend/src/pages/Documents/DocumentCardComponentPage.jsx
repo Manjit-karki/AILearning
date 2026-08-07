@@ -33,64 +33,64 @@ const DocumentCard = ({ document, onDelete }) => {
 
   return (
     <div
-      className="group relative flex flex-col justify-between p-5 bg-slate-50/80 hover:bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer overflow-hidden max-w-xs"
+      className="group relative bg-white/80 backdrop-blur-xl border border-slate-200/60 rounded-2xl p-5 hover:border-slate-300/60 hover:shadow-xl hover:shadow-slate-200/10 transition-all duration-300 flex flex-col justify-between cursor-pointer hover:-translate-y-1"
       onClick={handleNavigate}
     >
       {/* Header Section */}
       <div>
-        <div className="flex items-center justify-between mb-4">
-          <div className="p-3 bg-emerald-500 text-white rounded-xl shadow-sm">
-            <FileText className="w-6 h-6" strokeWidth={2} />
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <div className="shrink-0 w-12 h-12 bg-linear-to-br from-emerald-500 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25 group-hover:scale-110 transition-transform duration-300">
+            <FileText className="w-6 h-6 text-white" strokeWidth={2} />
           </div>
           <button
             onClick={handleDelete}
-            className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+            className="opacity-0 group-hover:opacity-100 w-8 h-8 flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all duration-200"
           >
             <Trash2 className="w-4 h-4" strokeWidth={2} />
           </button>
         </div>
 
         {/* Title */}
-        <h3 className="font-semibold text-slate-800 text-base mb-1 line-clamp-1" title={document.title}>
+        <h3 className="text-base font-semibold text-slate-900 mb-2" title={document.title}>
           {document.title}
         </h3>
 
         {/* Document Info */}
-        <div className="text-xs text-slate-400 font-medium mb-4">
+        <div className="flex items-center gap-3 text-sm text-slate-500 mb-3">
           {document.fileSize !== undefined && (
             <>
-              <span>{formatFileSize(document.fileSize)}</span>
+              <span className="font-medium">{formatFileSize(document.fileSize)}</span>
             </>
           )}
         </div>
 
         {/* Stats Section */}
-        <div className="flex items-center gap-2 mb-4">
+        <div className="flex items-center gap-3">
           {document.flashcardCount !== undefined && (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-purple-50 text-purple-600 rounded-lg text-xs font-medium">
-              <BookOpen className="w-3.5 h-3.5" strokeWidth={2} />
-              <span>{document.flashcardCount} Flashcards</span>
+            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-purple-50 rounded-lg">
+              <BookOpen className="w-3.5 h-3.5 text-purple-600" strokeWidth={2} />
+              <span className="text-xs font-semibold text-purple-700">{document.flashcardCount} Flashcards</span>
             </div>
           )}
           {document.quizCount !== undefined && (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-xs font-medium">
-              <BrainCircuit className="w-3.5 h-3.5" strokeWidth={2} />
-              <span>{document.quizCount} Quizzes</span>
+            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 rounded-lg">
+              <BrainCircuit className="w-3.5 h-3.5 text-emerald-600" strokeWidth={2} />
+              <span className="text-xs font-semibold text-emerald-700">{document.quizCount} Quizzes</span>
             </div>
           )}
         </div>
       </div>
 
       {/* Footer Section */}
-      <div className="pt-3 border-t border-slate-100/80">
-        <div className="flex items-center gap-1.5 text-xs text-slate-400">
+      <div className="mt-5 pt-4 border-t border-slate-100">
+        <div className="flex items-center gap-1.5 text-xs text-slate-500">
           <Clock className="w-3.5 h-3.5" strokeWidth={2} />
           <span>Uploaded {moment(document.createdAt).fromNow()}</span>
         </div>
       </div>
 
       {/* Hover Indicator */}
-      <div className="absolute bottom-0 left-0 right-0 h-1 bg-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+      <div className="absolute inset-0 rounded-2xl bg-linear-to-br from-emerald-500/0 to-teal-500/0 group-hover:from-emerald-500/5 group-hover:to-teal-500/5 transition-all duration-300 pointer-events-none" />
     </div>
   );
 };
