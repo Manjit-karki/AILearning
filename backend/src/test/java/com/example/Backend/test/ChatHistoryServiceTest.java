@@ -1,4 +1,4 @@
-package com.example.Backend;
+package com.example.Backend.test;
 
 import com.example.Backend.model.ChatHistory;
 import com.example.Backend.repository.ChatHistoryRepository;
