@@ -15,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "chathistories")
-@CompoundIndex(name = "userId_documentId_idx", def = "{'userId': 1, 'documentId': 1}")
+@CompoundIndex(name = "userId_documentId_idx", def = "{'userId': 1, 'documentId': 1}",unique = true)
 public class ChatHistory {
 
     @Id
