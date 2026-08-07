@@ -225,4 +225,60 @@ class ProfileServiceTest {
             verify(userRepository).save(mockUser);
         }
     }
+    @Nested
+    @DisplayName("Additional Edge Cases")
+    class EdgeCases {
+
+        @Test
+        @DisplayName("updateProfile - Should update ONLY name when newEmail is null")
+        void updateProfile_WhenOnlyNameProvided_ShouldUpdateNameOnly() {
+            when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+            when(userRepository.save(any(SUser.class))).thenAnswer(inv -> inv.getArgument(0));
+
+            ProfileResponse response = profileService.updateProfile(username, "New Name Only", null);
+
+            assertThat(response.name()).isEqualTo("New Name Only");
+            assertThat(response.email()).isEqualTo("john@example.com");
+            verify(userRepository, never()).existsByEmail(anyString());
+        }
+
+        @Test
+        @DisplayName("updateProfile - Should update ONLY email when newName is blank")
+        void updateProfile_WhenOnlyEmailProvided_ShouldUpdateEmailOnly() {
+            String newEmail = "newonly@example.com";
+            when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+            when(userRepository.existsByEmail(newEmail)).thenReturn(false);
+            when(userRepository.save(any(SUser.class))).thenAnswer(inv -> inv.getArgument(0));
+
+            ProfileResponse response = profileService.updateProfile(username, "   ", newEmail);
+
+            assertThat(response.name()).isEqualTo("John Doe");
+            assertThat(response.email()).isEqualTo(newEmail);
+        }
+
+        @Test
+        @DisplayName("changePassword - Should succeed when new password is exactly 6 characters")
+        void changePassword_WhenPasswordLengthExactlySix_ShouldSucceed() {
+            String pass6Chars = "123456"; // Exact boundary condition
+            when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+            when(passwordEncoder.matches("oldPass", mockUser.getPassword())).thenReturn(true);
+            when(passwordEncoder.encode(pass6Chars)).thenReturn("encoded123456");
+
+            profileService.changePassword(username, "oldPass", pass6Chars);
+
+            verify(userRepository).save(mockUser);
+            assertThat(mockUser.getPassword()).isEqualTo("encoded123456");
+        }
+
+        @Test
+        @DisplayName("updateProfile - Should propagate exception if database save fails")
+        void updateProfile_WhenSaveFails_ShouldPropagateException() {
+            when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+            when(userRepository.save(any(SUser.class))).thenThrow(new RuntimeException("Database write failed"));
+
+            assertThatThrownBy(() -> profileService.updateProfile(username, "New Name", null))
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessage("Database write failed");
+        }
+    }
 }
