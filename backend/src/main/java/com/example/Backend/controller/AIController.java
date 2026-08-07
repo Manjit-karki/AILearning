@@ -1,6 +1,8 @@
 package com.example.Backend.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.Backend.DTO.AiActionRequest;
@@ -23,7 +25,8 @@ public class AIController {
     private final VectorStore vectorStore;
 
     @PostMapping("/summarize")
-    public ResponseEntity<AiActionResponse> summarize(@RequestBody AiActionRequest request) {
+    public ResponseEntity<AiActionResponse> summarize(@RequestBody AiActionRequest request,
+                                                      @AuthenticationPrincipal UserDetails user ) {
         String prompt = """
                 Summarize the following topic in clear, concise study notes.
                 Use bullet points where helpful. Keep it exam-focused.
@@ -35,7 +38,8 @@ public class AIController {
     }
 
     @PostMapping("/explain")
-    public ResponseEntity<AiActionResponse> explain(@RequestBody AiActionRequest request) {
+    public ResponseEntity<AiActionResponse> explain(@RequestBody AiActionRequest request,
+                                                    @AuthenticationPrincipal UserDetails user) {
         String prompt = """
                 Explain the following concept in a way a student can easily understand.
                 Break it into simple steps or an analogy if useful. Include a brief example.
