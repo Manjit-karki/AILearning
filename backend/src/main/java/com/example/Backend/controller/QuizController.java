@@ -31,7 +31,7 @@ import java.util.Map;
 public class QuizController {
 
     private final QuizService quizService;
-    private final QuizGenService quizGenService; // Injected AI service
+    private final QuizGenService quizGenService;
 
     @PostMapping("/generate")
     public ResponseEntity<ApiResponse<Quiz>> generateQuiz(
@@ -47,8 +47,11 @@ public class QuizController {
             );
             return ResponseEntity.ok(ApiResponse.ok(quiz, "Quiz generated successfully"));
         } catch (Exception e) {
-            log.error("generateQuiz: {}", e.getMessage());
-            return ResponseEntity.status(500).body(ApiResponse.error(500, e.getMessage()));
+            log.error("generateQuiz failed", e);
+            String msg = (e.getMessage() != null && e.getMessage().startsWith("AI failed to generate"))
+                    ? e.getMessage()
+                    : "Failed to generate quiz. Please try again.";
+            return ResponseEntity.status(500).body(ApiResponse.error(500, msg));
         }
     }
 
