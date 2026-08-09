@@ -1,7 +1,5 @@
 package com.example.Backend.controller;
 
-import com.example.Backend.ai.FlashcardGenService;
-import com.example.Backend.ai.QuizGenService;
 import com.example.Backend.services.ChatHistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

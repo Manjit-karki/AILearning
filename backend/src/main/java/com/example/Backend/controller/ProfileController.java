@@ -25,6 +25,7 @@ public class ProfileController {
     @GetMapping
     public ResponseEntity<ApiResponse<SUser>> getProfile(
             @AuthenticationPrincipal UserDetails user) {
+        log.info("Fetching profile for principal username: '{}'", user.getUsername());
         try {
             SUser profile = profileService.getProfile(user.getUsername());
             return ResponseEntity.ok(ApiResponse.ok(profile, "Profile fetched successfully"));
