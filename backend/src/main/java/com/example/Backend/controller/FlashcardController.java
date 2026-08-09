@@ -5,13 +5,11 @@ import com.example.Backend.model.Flashcard;
 import com.example.Backend.services.FlashcardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -54,29 +52,28 @@ public class FlashcardController {
     @PostMapping("/document/{documentId}/generate")
     public ResponseEntity<ApiResponse<Flashcard>> generateAndSaveFlashcards(
             @PathVariable String documentId,
-            @RequestBody GenerateRequest request,
             @RequestParam(defaultValue = "5") int count,
             @AuthenticationPrincipal UserDetails user) {
         try {
             String uid = userId(user);
 
-            // 1. Generate cars
-            List<Flashcard.Card> generatedCards = flashcardGenService.generateCards(request.sourceText(), count);
-
-            if (generatedCards == null || generatedCards.isEmpty()) {
-                return ResponseEntity.status(500)
-                        .body(ApiResponse.error(500, "AI failed to generate flashcards or returned invalid format."));
+            if (count < 1) {
+                return bad400("count must be at least 1");
             }
+            int clampedCount = Math.min(count, 20);
 
-            // 2. Save directly to MongoDB
-            Flashcard savedFlashcard = flashcardService.createFlashcard(uid, documentId, generatedCards);
+            // Generates directly from the document's ingested content in the vector store
+            Flashcard savedFlashcard = flashcardGenService.generateAndSaveFromVectorStore(uid, documentId, clampedCount);
 
-            // 3. Return your standard API Response
             return ResponseEntity.ok(ApiResponse.ok(savedFlashcard, "Flashcards generated successfully"));
 
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
+            if (e.getMessage() != null && e.getMessage().startsWith("No ingested content found")) {
+                return bad400(e.getMessage());
+            }
             log.error("generateAndSaveFlashcards: {}", e.getMessage());
-            return ResponseEntity.status(500).body(ApiResponse.error(500, e.getMessage()));
+            return ResponseEntity.status(500)
+                    .body(ApiResponse.error(500, "Failed to generate flashcards. Please try again."));
         }
     }
 
@@ -136,5 +133,4 @@ public class FlashcardController {
     private <T> ResponseEntity<ApiResponse<T>> bad400(String msg) {
         return ResponseEntity.status(400).body(ApiResponse.error(400, msg));
     }
-    public record GenerateRequest(String sourceText) {}
 }

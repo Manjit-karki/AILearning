@@ -20,7 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DocumentIngestionService implements CommandLineRunner {
     private static final Logger log = LoggerFactory.getLogger(DocumentIngestionService.class);
-    private static final String Document_id = "Chemistry-XII-2077";
+    private static final String DOCUMENT_ID = "Chemistry-XII-2077";
 
     @Value("classpath:/documents/Chemistry-XII-2077-full-book.pdf")
     private Resource resource;
@@ -29,7 +29,6 @@ public class DocumentIngestionService implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        // Query the vector store for existing records
         List<Document> existingDocs = vectorStore.similaritySearch(
                 SearchRequest.builder()
                         .query("Chemistry")
@@ -43,10 +42,17 @@ public class DocumentIngestionService implements CommandLineRunner {
             return;
         }
 
-        log.info("Processing PDF file");
+        log.info("Processing PDF file...");
         PagePdfDocumentReader pdfDocumentReader = new PagePdfDocumentReader(resource);
         TextSplitter textSplitter = TokenTextSplitter.builder().build();
-        vectorStore.accept(textSplitter.split(pdfDocumentReader.read()));
-        log.info("Completed Processing PDF file");
+
+        // Split PDF pages into chunks
+        List<Document> splitDocs = textSplitter.split(pdfDocumentReader.read());
+
+        // Attach documentId to each chunk's metadata map
+        splitDocs.forEach(doc -> doc.getMetadata().put("documentId", DOCUMENT_ID));
+
+        vectorStore.accept(splitDocs);
+        log.info("Successfully ingested {} chunks for documentId: {}", splitDocs.size(), DOCUMENT_ID);
     }
 }
