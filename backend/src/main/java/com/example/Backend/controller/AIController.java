@@ -27,8 +27,6 @@ public class AIController {
     private final ChatClient.Builder chatClientBuilder;
     private final VectorStore vectorStore;
     private final ChatHistoryService chatHistoryService;
-    private final FlashcardGenService flashcardGenService;
-    private final QuizGenService quizGenService;
 
     @PostMapping("/summary")
     public ResponseEntity<AiActionResponse> summarize(@RequestBody AiActionRequest request,

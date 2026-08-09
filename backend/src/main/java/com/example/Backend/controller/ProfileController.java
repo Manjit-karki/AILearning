@@ -1,7 +1,8 @@
 package com.example.Backend.controller;
 
-import com.example.Backend.DTO.ProfileResponse;
+import com.example.Backend.model.SUser;
 import com.example.Backend.services.ProfileService;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -22,10 +23,10 @@ public class ProfileController {
     private final ProfileService profileService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<ProfileResponse>> getProfile(
+    public ResponseEntity<ApiResponse<SUser>> getProfile(
             @AuthenticationPrincipal UserDetails user) {
         try {
-            ProfileResponse profile = profileService.getProfile(userId(user));
+            SUser profile = profileService.getProfile(user.getUsername());
             return ResponseEntity.ok(ApiResponse.ok(profile, "Profile fetched successfully"));
         } catch (RuntimeException e) {
             if (notFound(e)) return notFound404("User not found");
@@ -35,12 +36,12 @@ public class ProfileController {
     }
 
     @PutMapping
-    public ResponseEntity<ApiResponse<ProfileResponse>> updateProfile(
-            @RequestBody UpdateProfileRequest request,
+    public ResponseEntity<ApiResponse<SUser>> updateProfile(
+            @Valid @RequestBody UpdateProfileRequest request,
             @AuthenticationPrincipal UserDetails user) {
         try {
-            ProfileResponse updated = profileService.updateProfile(
-                    userId(user), request.getName(), request.getEmail());
+            SUser updated = profileService.updateProfile(
+                    user.getUsername(), request.getName(), request.getEmail());
             return ResponseEntity.ok(ApiResponse.ok(updated, "Profile updated successfully"));
         } catch (RuntimeException e) {
             if (notFound(e)) return notFound404("User not found");
@@ -53,11 +54,11 @@ public class ProfileController {
 
     @PutMapping("/password")
     public ResponseEntity<ApiResponse<Void>> changePassword(
-            @RequestBody ChangePasswordRequest request,
+            @Valid @RequestBody ChangePasswordRequest request,
             @AuthenticationPrincipal UserDetails user) {
         try {
             profileService.changePassword(
-                    userId(user), request.getCurrentPassword(), request.getNewPassword());
+                    user.getUsername(), request.getCurrentPassword(), request.getNewPassword());
             return ResponseEntity.ok(ApiResponse.ok(null, "Password changed successfully"));
         } catch (RuntimeException e) {
             if (notFound(e)) return notFound404("User not found");
@@ -68,8 +69,6 @@ public class ProfileController {
             return ResponseEntity.status(500).body(ApiResponse.error(500, e.getMessage()));
         }
     }
-
-    private String userId(UserDetails u) { return u.getUsername(); }
 
     private boolean notFound(RuntimeException e) {
         return e.getMessage() != null && e.getMessage().contains("not found");

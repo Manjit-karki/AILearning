@@ -1,6 +1,5 @@
 package com.example.Backend.test;
 
-import com.example.Backend.DTO.ProfileResponse;
 import com.example.Backend.model.SUser;
 import com.example.Backend.repository.UserRepository;
 import com.example.Backend.services.ProfileService;
@@ -56,17 +55,17 @@ class ProfileServiceTest {
     class GetProfileTests {
 
         @Test
-        @DisplayName("getProfile - Should return ProfileResponse when user exists")
-        void getProfile_WhenUserExists_ShouldReturnResponse() {
+        @DisplayName("getProfile - Should return SUser entity when user exists")
+        void getProfile_WhenUserExists_ShouldReturnUser() {
             when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
 
-            ProfileResponse response = profileService.getProfile(username);
+            SUser response = profileService.getProfile(username);
 
             assertThat(response).isNotNull();
-            assertThat(response.userId()).isEqualTo(mockUser.getUserId());
-            assertThat(response.username()).isEqualTo(mockUser.getUsername());
-            assertThat(response.name()).isEqualTo(mockUser.getName());
-            assertThat(response.email()).isEqualTo(mockUser.getEmail());
+            assertThat(response.getUserId()).isEqualTo(mockUser.getUserId());
+            assertThat(response.getUsername()).isEqualTo(mockUser.getUsername());
+            assertThat(response.getName()).isEqualTo(mockUser.getName());
+            assertThat(response.getEmail()).isEqualTo(mockUser.getEmail());
         }
 
         @Test
@@ -104,10 +103,10 @@ class ProfileServiceTest {
             when(userRepository.existsByEmail(newEmail)).thenReturn(false);
             when(userRepository.save(any(SUser.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-            ProfileResponse response = profileService.updateProfile(username, newName, newEmail);
+            SUser response = profileService.updateProfile(username, newName, newEmail);
 
-            assertThat(response.name()).isEqualTo(newName);
-            assertThat(response.email()).isEqualTo(newEmail);
+            assertThat(response.getName()).isEqualTo(newName);
+            assertThat(response.getEmail()).isEqualTo(newEmail);
             verify(userRepository).save(mockUser);
         }
 
@@ -132,9 +131,9 @@ class ProfileServiceTest {
             when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
             when(userRepository.save(any(SUser.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-            ProfileResponse response = profileService.updateProfile(username, "New Name", mockUser.getEmail());
+            SUser response = profileService.updateProfile(username, "New Name", mockUser.getEmail());
 
-            assertThat(response.name()).isEqualTo("New Name");
+            assertThat(response.getName()).isEqualTo("New Name");
             verify(userRepository, never()).existsByEmail(anyString());
             verify(userRepository).save(mockUser);
         }
@@ -145,10 +144,10 @@ class ProfileServiceTest {
             when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
             when(userRepository.save(any(SUser.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-            ProfileResponse response = profileService.updateProfile(username, "   ", null);
+            SUser response = profileService.updateProfile(username, "    ", null);
 
-            assertThat(response.name()).isEqualTo("John Doe");
-            assertThat(response.email()).isEqualTo("john@example.com");
+            assertThat(response.getName()).isEqualTo("John Doe");
+            assertThat(response.getEmail()).isEqualTo("john@example.com");
             verify(userRepository).save(mockUser);
         }
     }
@@ -225,6 +224,7 @@ class ProfileServiceTest {
             verify(userRepository).save(mockUser);
         }
     }
+
     @Nested
     @DisplayName("Additional Edge Cases")
     class EdgeCases {
@@ -235,10 +235,10 @@ class ProfileServiceTest {
             when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
             when(userRepository.save(any(SUser.class))).thenAnswer(inv -> inv.getArgument(0));
 
-            ProfileResponse response = profileService.updateProfile(username, "New Name Only", null);
+            SUser response = profileService.updateProfile(username, "New Name Only", null);
 
-            assertThat(response.name()).isEqualTo("New Name Only");
-            assertThat(response.email()).isEqualTo("john@example.com");
+            assertThat(response.getName()).isEqualTo("New Name Only");
+            assertThat(response.getEmail()).isEqualTo("john@example.com");
             verify(userRepository, never()).existsByEmail(anyString());
         }
 
@@ -250,16 +250,16 @@ class ProfileServiceTest {
             when(userRepository.existsByEmail(newEmail)).thenReturn(false);
             when(userRepository.save(any(SUser.class))).thenAnswer(inv -> inv.getArgument(0));
 
-            ProfileResponse response = profileService.updateProfile(username, "   ", newEmail);
+            SUser response = profileService.updateProfile(username, "    ", newEmail);
 
-            assertThat(response.name()).isEqualTo("John Doe");
-            assertThat(response.email()).isEqualTo(newEmail);
+            assertThat(response.getName()).isEqualTo("John Doe");
+            assertThat(response.getEmail()).isEqualTo(newEmail);
         }
 
         @Test
         @DisplayName("changePassword - Should succeed when new password is exactly 6 characters")
         void changePassword_WhenPasswordLengthExactlySix_ShouldSucceed() {
-            String pass6Chars = "123456"; // Exact boundary condition
+            String pass6Chars = "123456";
             when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
             when(passwordEncoder.matches("oldPass", mockUser.getPassword())).thenReturn(true);
             when(passwordEncoder.encode(pass6Chars)).thenReturn("encoded123456");
