@@ -124,10 +124,10 @@ const QuizResultPage = () => {
       </div>
 
       {/* Questions Review */}
-      <div className="">
-        <div className="">
-          <BookOpen className="" strokeWidth={2} />
-          <h3 className="">Detailed Review</h3>
+      <div className="space-y-6">
+        <div className="flex items-center gap-3 mb-2">
+          <BookOpen className="w-5 h-5 text-slate-600" strokeWidth={2} />
+          <h3 className="text-lg font-semibold text-slate-900">Detailed Review</h3>
         </div>
 
         {detailedResults.map((result, index) => {
@@ -138,15 +138,17 @@ const QuizResultPage = () => {
           const isCorrect = result.isCorrect;
 
           return (
-            <div key={index} className="">
-              <div className="">
-                <div className="">
-                  <div className="">
-                    <span className="">
+            <div key={index} 
+            className="bg-white/80 backdrop-blur-xl border-2 border-slate-200 rounded-2xl shadow-lg shadow-slate-200/50 p-6"
+            >
+              <div className="flex items-start justify-between gap-4 mb-3">
+                <div className="flex-1">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-slate-50 border border-slate-200 rounded-lg mb-2">
+                    <span className="text-xs font-semibold text-slate-600">
                       Question {index + 1}
                     </span>
                   </div>
-                  <h4 className="">
+                  <h4 className="text-base font-semibold text-slate-900 leading-relaxed">
                     {result.question}
                   </h4>
                 </div>
@@ -156,14 +158,14 @@ const QuizResultPage = () => {
                     : 'bg-rose-50 border-2 border-rose-200'
                 }`}>
                   {isCorrect ? (
-                    <CheckCircle2 className="" strokeWidth={2.5} />
+                    <CheckCircle2 className="w-5 h-5 text-emerald-500" strokeWidth={2.5} />
                   ) : (
-                    <XCircle className="" strokeWidth={2.5} />
+                    <XCircle className="w-5 h-5 text-rose-500" strokeWidth={2.5} />
                   )}
                 </div>
               </div>
 
-              <div className="">
+              <div className="space-y-3 mb-4">
                 {result.options.map((option, optIndex) => {
                   const isCorrectOption = optIndex === correctAnswerIndex;
                   const isUserAnswer = optIndex === userAnswerIndex;
@@ -180,7 +182,7 @@ const QuizResultPage = () => {
                           : 'bg-slate-50 border-slate-200'
                       }`}
                     >
-                      <div className="">
+                      <div className="flex items-center justify-between gap-3">
                         <span className={`text-sm font-medium ${
                           isCorrectOption
                             ? 'text-emerald-900'
@@ -190,16 +192,16 @@ const QuizResultPage = () => {
                         }`}>
                           {option}
                         </span>
-                        <div className="">
+                        <div className="flex items-center gap-2">
                           {isCorrectOption && (
-                            <span className="">
-                              <CheckCircle2 className="" strokeWidth={2.5} />
+                            <span className="inline-flex items-center gap-1 px-2 py-1 bg-emerald-100 border border-emerald-300 rounded-lg text-xs font-semibold text-emerald-700">
+                              <CheckCircle2 className="w-3 h-3" strokeWidth={2.5} />
                               Correct
                             </span>
                           )}
                           {isWrongAnswer && (
-                            <span className="">
-                              <XCircle className="" strokeWidth={2.5} />
+                            <span className="inline-flex items-center gap-1 px-2 py-1 bg-rose-100 border border-rose-300 rounded-lg text-xs font-semibold text-rose-700">
+                              <XCircle className="w-3 h-3" strokeWidth={2.5} />
                               Your Answer
                             </span>
                           )}
@@ -212,16 +214,16 @@ const QuizResultPage = () => {
 
               {/* Explanation */}
               {result.explanation && (
-                <div className="">
-                  <div className="">
-                    <div className="">
-                      <BookOpen className="" strokeWidth={2} />
+                <div className="p-4 bg-slate-50 to-slate-100/50 border border-slate-200 rounded-xl">
+                  <div className="flex items-start gap-3">
+                    <div className="shrink-0 w-8 h-8 rounded-lg bg-slate-200 flex items-center justify-center mt-0.5">
+                      <BookOpen className="w-4 h-4 text-slate-600" strokeWidth={2} />
                     </div>
-                    <div className="">
-                      <p className="">
+                    <div className="flex-1">
+                      <p className="font-xs font-semibold text-slate-600 uppercase tracking-wide mb-1">
                         Explanation
                       </p>
-                      <p className="">
+                      <p className="text-sm text-slate-700 leading-relaxed">
                         {result.explanation}
                       </p>
                     </div>
