@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import documentService from "../../services/documentService";
 import Spinner from "../../Components/common/Spinner";
 import Button from "../../Components/common/Button";
-import DocumentCard from "../../Components/Documents/DocumentCard";
+import DocumentCard from "../../Components/document/DocumentCard";
 
 const DocumentListPage = () => {
   const [documents, setDocuments] = useState([]);

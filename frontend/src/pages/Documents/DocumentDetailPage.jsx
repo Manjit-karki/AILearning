@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import documentService from '../../services/documentService';
-import Spinner from '../../components/common/Spinner';
+import Spinner from '../../Components/common/Spinner';
 import toast from 'react-hot-toast';
 import { ArrowLeft, ExternalLink } from 'lucide-react';
-import PageHeader from '../../components/common/PageHeader';
-import Tabs from '../../components/common/Tabs';
+import PageHeader from '../../Components/common/PageHeader';
+import Tabs from '../../Components/common/Tabs';
 
 const DocumentDetailPage = () => {
   const { id } = useParams();

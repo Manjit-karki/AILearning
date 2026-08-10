@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Plus, ChevronLeft, ChevronRight, Trash2, ArrowLeft, Sparkles, Brain, } from "lucide-react";
 import toast from "react-hot-toast";
-import momnet from "moment"
+import moment from "moment"
 
 import flashcardService from "../../services/flashcardService";
 import aiService from "../../services/aiService";
@@ -47,7 +47,7 @@ const FlashcardManager = ({ documentId }) => {
   const handleGenerateFlashcards = async () => {
     setGenerating(true);
     try {
-      await aiService.genearteFlashcards(documentId);
+      await aiService.generateFlashcards(documentId);
       toast.success("Flashcards genearted successfully!");
       fetchFlashcardSets();
     } catch (error) {
