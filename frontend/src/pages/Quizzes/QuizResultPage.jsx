@@ -102,7 +102,7 @@ const QuizResultPage = () => {
 
         {/* Stats */}
         <div className="flex items-center justify-center gap-4 pt-4">
-          <div className="flext items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl">
+          <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl">
             <Target className="w-4 h-4 text-slate-600" strokeWidth={2} />
             <span className="text-sm font-semibold text-slate-700">
               {totalQuestions} Total
@@ -138,8 +138,9 @@ const QuizResultPage = () => {
           const isCorrect = result.isCorrect;
 
           return (
-            <div key={index} 
-            className="bg-white/80 backdrop-blur-xl border-2 border-slate-200 rounded-2xl shadow-lg shadow-slate-200/50 p-6"
+            <div 
+              key={index} 
+              className="bg-white/80 backdrop-blur-xl border-2 border-slate-200 rounded-2xl shadow-lg shadow-slate-200/50 p-6"
             >
               <div className="flex items-start justify-between gap-4 mb-3">
                 <div className="flex-1">
@@ -220,7 +221,7 @@ const QuizResultPage = () => {
                       <BookOpen className="w-4 h-4 text-slate-600" strokeWidth={2} />
                     </div>
                     <div className="flex-1">
-                      <p className="font-xs font-semibold text-slate-600 uppercase tracking-wide mb-1">
+                      <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1">
                         Explanation
                       </p>
                       <p className="text-sm text-slate-700 leading-relaxed">
@@ -233,6 +234,19 @@ const QuizResultPage = () => {
             </div>
           );
         })}
+      </div>
+
+      {/* Action Button */}
+      <div className="mt-8 flex justify-center">
+        <Link to={`/documents/${quiz.document._id}`}>
+          <button className="group relative px-8 h-12 bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold text-sm rounded-xl transition-all duration-200 shadow-lg shadow-emerald-500/25 active:scale-95 overflow-hidden">
+            <span className="relative z-10 flex items-center gap-2">
+              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-200" strokeWidth={2.5} />
+              Return to Document
+            </span>
+            <div className="absolute inset-0 bg-linear-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+          </button>
+        </Link>
       </div>
     </div>
   );
