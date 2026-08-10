@@ -1,5 +1,6 @@
 package com.example.Backend.controller;
 
+import com.example.Backend.services.ChatHistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,8 +24,9 @@ public class AIController {
 
     private final ChatClient.Builder chatClientBuilder;
     private final VectorStore vectorStore;
+    private final ChatHistoryService chatHistoryService;
 
-    @PostMapping("/summarize")
+    @PostMapping("/summary")
     public ResponseEntity<AiActionResponse> summarize(@RequestBody AiActionRequest request,
                                                       @AuthenticationPrincipal UserDetails user ) {
         String prompt = """
@@ -37,7 +39,7 @@ public class AIController {
         return ResponseEntity.ok(new AiActionResponse("summary", request.query(), result));
     }
 
-    @PostMapping("/explain")
+    @PostMapping("/explain-concept")
     public ResponseEntity<AiActionResponse> explain(@RequestBody AiActionRequest request,
                                                     @AuthenticationPrincipal UserDetails user) {
         String prompt = """

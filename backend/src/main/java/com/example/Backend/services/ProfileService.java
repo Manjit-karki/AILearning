@@ -1,6 +1,5 @@
 package com.example.Backend.services;
 
-import com.example.Backend.DTO.ProfileResponse;
 import com.example.Backend.model.SUser;
 import com.example.Backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,14 +13,13 @@ public class ProfileService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public ProfileResponse getProfile(String username) {
-        SUser user = userRepository.findByUsername(username)
+    public SUser getProfile(String identifier) {
+        return userRepository.findByUsernameOrEmail(identifier, identifier)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return toResponse(user);
     }
 
-    public ProfileResponse updateProfile(String username, String newName, String newEmail) {
-        SUser user = userRepository.findByUsername(username)
+    public SUser updateProfile(String identifier, String newName, String newEmail) {
+        SUser user = userRepository.findByUsernameOrEmail(identifier, identifier)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         if (newName != null && !newName.isBlank()) {
@@ -35,12 +33,11 @@ public class ProfileService {
             user.setEmail(newEmail);
         }
 
-        SUser saved = userRepository.save(user);
-        return toResponse(saved);
+        return userRepository.save(user);
     }
 
-    public void changePassword(String username, String currentPassword, String newPassword) {
-        SUser user = userRepository.findByUsername(username)
+    public void changePassword(String identifier, String currentPassword, String newPassword) {
+        SUser user = userRepository.findByUsernameOrEmail(identifier, identifier)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
@@ -52,9 +49,5 @@ public class ProfileService {
 
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
-    }
-
-    private ProfileResponse toResponse(SUser user) {
-        return new ProfileResponse(user.getUserId(), user.getName(), user.getUsername(), user.getEmail());
     }
 }

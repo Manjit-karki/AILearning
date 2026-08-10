@@ -9,8 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
 import org.springframework.ai.vectorstore.SearchRequest;
-import org.springframework.ai.vectorstore.filter.FilterExpressionBuilder;
-import org.springframework.ai.vectorstore.filter.Filter;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,7 +27,6 @@ public class ChatController {
     private final ChatClient.Builder chatClientBuilder;
     private final VectorStore vectorStore;
     private final ChatHistoryService chatHistoryService;
-    private static final FilterExpressionBuilder FILTER = new FilterExpressionBuilder();
 
     @PostMapping
     public ResponseEntity<ApiResponse<Map<String, Object>>> postMessage(
@@ -46,19 +43,14 @@ public class ChatController {
             // Ensure a history record exists for this user+document pair
             chatHistoryService.getOrCreate(userId, documentId);
 
-            // Build the vector store advisor, scoped to this document only
-            QuestionAnswerAdvisor.Builder advisorBuilder = QuestionAnswerAdvisor.builder(vectorStore);
-            if (documentId != null && !documentId.isBlank()) {
-                Filter.Expression filter = FILTER.eq("documentId", documentId).build();
-                advisorBuilder.searchRequest(SearchRequest.builder()
-                        .filterExpression(filter)
-                        .topK(4)
-                        .build());
-            }
+            // Simple vector store advisor without metadata filters
+            QuestionAnswerAdvisor advisor = QuestionAnswerAdvisor.builder(vectorStore)
+                    .searchRequest(SearchRequest.builder().topK(4).build())
+                    .build();
 
             ChatClient chatClient = chatClientBuilder.build();
             String aiResponse = chatClient.prompt()
-                    .advisors(advisorBuilder.build())
+                    .advisors(advisor)
                     .user(userMessage)
                     .call()
                     .content();

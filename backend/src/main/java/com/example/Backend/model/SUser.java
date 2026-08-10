@@ -2,6 +2,7 @@ package com.example.Backend.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.minidev.json.annotate.JsonIgnore;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -26,6 +27,7 @@ public class SUser {
     @NotBlank(message = "Email is required")
     private String email;
 
+    @JsonIgnore
     @NotBlank(message = "Password is required")
     @Size(min = 6, message = "Password must be at least 6 characters long")
     private String password;
