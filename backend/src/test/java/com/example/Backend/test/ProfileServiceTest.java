@@ -57,7 +57,7 @@ class ProfileServiceTest {
         @Test
         @DisplayName("getProfile - Should return SUser entity when user exists")
         void getProfile_WhenUserExists_ShouldReturnUser() {
-            when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+            when(userRepository.findByUsernameOrEmail(username, username)).thenReturn(Optional.of(mockUser));
 
             SUser response = profileService.getProfile(username);
 
@@ -71,7 +71,7 @@ class ProfileServiceTest {
         @Test
         @DisplayName("getProfile - Should throw exception when user not found")
         void getProfile_WhenUserNotFound_ShouldThrowException() {
-            when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
+            when(userRepository.findByUsernameOrEmail(username, username)).thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> profileService.getProfile(username))
                     .isInstanceOf(RuntimeException.class)
@@ -86,7 +86,7 @@ class ProfileServiceTest {
         @Test
         @DisplayName("updateProfile - Should throw exception when user not found")
         void updateProfile_WhenUserNotFound_ShouldThrowException() {
-            when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
+            when(userRepository.findByUsernameOrEmail(username, username)).thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> profileService.updateProfile(username, "New Name", "new@example.com"))
                     .isInstanceOf(RuntimeException.class)
@@ -99,7 +99,7 @@ class ProfileServiceTest {
             String newName = "Jane Doe";
             String newEmail = "jane@example.com";
 
-            when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+            when(userRepository.findByUsernameOrEmail(username, username)).thenReturn(Optional.of(mockUser));
             when(userRepository.existsByEmail(newEmail)).thenReturn(false);
             when(userRepository.save(any(SUser.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -115,7 +115,7 @@ class ProfileServiceTest {
         void updateProfile_WhenEmailAlreadyInUse_ShouldThrowException() {
             String newEmail = "taken@example.com";
 
-            when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+            when(userRepository.findByUsernameOrEmail(username, username)).thenReturn(Optional.of(mockUser));
             when(userRepository.existsByEmail(newEmail)).thenReturn(true);
 
             assertThatThrownBy(() -> profileService.updateProfile(username, "Jane Doe", newEmail))
@@ -128,7 +128,7 @@ class ProfileServiceTest {
         @Test
         @DisplayName("updateProfile - Should not check email existence if new email matches current email")
         void updateProfile_WhenEmailUnchanged_ShouldNotCheckExistence() {
-            when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+            when(userRepository.findByUsernameOrEmail(username, username)).thenReturn(Optional.of(mockUser));
             when(userRepository.save(any(SUser.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
             SUser response = profileService.updateProfile(username, "New Name", mockUser.getEmail());
@@ -141,7 +141,7 @@ class ProfileServiceTest {
         @Test
         @DisplayName("updateProfile - Should ignore null or blank values without updating fields")
         void updateProfile_WhenInputsAreNullOrBlank_ShouldKeepOriginalValues() {
-            when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+            when(userRepository.findByUsernameOrEmail(username, username)).thenReturn(Optional.of(mockUser));
             when(userRepository.save(any(SUser.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
             SUser response = profileService.updateProfile(username, "    ", null);
@@ -159,7 +159,7 @@ class ProfileServiceTest {
         @Test
         @DisplayName("changePassword - Should throw exception when user not found")
         void changePassword_WhenUserNotFound_ShouldThrowException() {
-            when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
+            when(userRepository.findByUsernameOrEmail(username, username)).thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> profileService.changePassword(username, "oldPass", "newSecretPass"))
                     .isInstanceOf(RuntimeException.class)
@@ -169,7 +169,7 @@ class ProfileServiceTest {
         @Test
         @DisplayName("changePassword - Should throw exception when current password does not match")
         void changePassword_WhenCurrentPasswordIncorrect_ShouldThrowException() {
-            when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+            when(userRepository.findByUsernameOrEmail(username, username)).thenReturn(Optional.of(mockUser));
             when(passwordEncoder.matches("wrongPass", mockUser.getPassword())).thenReturn(false);
 
             assertThatThrownBy(() -> profileService.changePassword(username, "wrongPass", "newSecretPass"))
@@ -183,7 +183,7 @@ class ProfileServiceTest {
         @ValueSource(strings = {"12345", "", "a"})
         @DisplayName("changePassword - Should throw exception when new password is too short")
         void changePassword_WhenNewPasswordShort_ShouldThrowException(String shortPassword) {
-            when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+            when(userRepository.findByUsernameOrEmail(username, username)).thenReturn(Optional.of(mockUser));
             when(passwordEncoder.matches("correctPass", mockUser.getPassword())).thenReturn(true);
 
             assertThatThrownBy(() -> profileService.changePassword(username, "correctPass", shortPassword))
@@ -196,7 +196,7 @@ class ProfileServiceTest {
         @Test
         @DisplayName("changePassword - Should throw exception when new password is null")
         void changePassword_WhenNewPasswordNull_ShouldThrowException() {
-            when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+            when(userRepository.findByUsernameOrEmail(username, username)).thenReturn(Optional.of(mockUser));
             when(passwordEncoder.matches("correctPass", mockUser.getPassword())).thenReturn(true);
 
             assertThatThrownBy(() -> profileService.changePassword(username, "correctPass", null))
@@ -213,7 +213,7 @@ class ProfileServiceTest {
             String rawNewPass = "newValidPassword123";
             String encodedNewPass = "encodedNewPassword123";
 
-            when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+            when(userRepository.findByUsernameOrEmail(username, username)).thenReturn(Optional.of(mockUser));
             when(passwordEncoder.matches(rawOldPass, mockUser.getPassword())).thenReturn(true);
             when(passwordEncoder.encode(rawNewPass)).thenReturn(encodedNewPass);
 
@@ -232,7 +232,7 @@ class ProfileServiceTest {
         @Test
         @DisplayName("updateProfile - Should update ONLY name when newEmail is null")
         void updateProfile_WhenOnlyNameProvided_ShouldUpdateNameOnly() {
-            when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+            when(userRepository.findByUsernameOrEmail(username, username)).thenReturn(Optional.of(mockUser));
             when(userRepository.save(any(SUser.class))).thenAnswer(inv -> inv.getArgument(0));
 
             SUser response = profileService.updateProfile(username, "New Name Only", null);
@@ -246,7 +246,7 @@ class ProfileServiceTest {
         @DisplayName("updateProfile - Should update ONLY email when newName is blank")
         void updateProfile_WhenOnlyEmailProvided_ShouldUpdateEmailOnly() {
             String newEmail = "newonly@example.com";
-            when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+            when(userRepository.findByUsernameOrEmail(username, username)).thenReturn(Optional.of(mockUser));
             when(userRepository.existsByEmail(newEmail)).thenReturn(false);
             when(userRepository.save(any(SUser.class))).thenAnswer(inv -> inv.getArgument(0));
 
@@ -260,7 +260,7 @@ class ProfileServiceTest {
         @DisplayName("changePassword - Should succeed when new password is exactly 6 characters")
         void changePassword_WhenPasswordLengthExactlySix_ShouldSucceed() {
             String pass6Chars = "123456";
-            when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+            when(userRepository.findByUsernameOrEmail(username, username)).thenReturn(Optional.of(mockUser));
             when(passwordEncoder.matches("oldPass", mockUser.getPassword())).thenReturn(true);
             when(passwordEncoder.encode(pass6Chars)).thenReturn("encoded123456");
 
@@ -273,7 +273,7 @@ class ProfileServiceTest {
         @Test
         @DisplayName("updateProfile - Should propagate exception if database save fails")
         void updateProfile_WhenSaveFails_ShouldPropagateException() {
-            when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+            when(userRepository.findByUsernameOrEmail(username, username)).thenReturn(Optional.of(mockUser));
             when(userRepository.save(any(SUser.class))).thenThrow(new RuntimeException("Database write failed"));
 
             assertThatThrownBy(() -> profileService.updateProfile(username, "New Name", null))
