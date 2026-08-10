@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, CheckCircle2 } from 'lucide-react';
 import quizService from '../../services/quizService';
-import PageHeader from '../../Components/common/PageHeader';
-import Spinner from '../../Components/common/Spinner';
+import PageHeader from '../../components/common/PageHeader';
+import Spinner from '../../components/common/Spinner';
 import toast from 'react-hot-toast';
-import Button from '../../Components/common/Button';
+import Button from '../../components/common/Button';
 
 const QuizTakePage = () => {
   const { quizId } = useParams();
@@ -52,7 +52,24 @@ const QuizTakePage = () => {
   };
 
   const handleSubmitQuiz = async () => {
-    // Implement quiz submission logic here
+    setSubmitting(true);
+    try {
+      const formattedAnswers = Object.keys(selectedAnswers).map((questionId) => {
+        const question = quiz.questions.find((q) => q._id === questionId);
+        const questionIndex = quiz.questions.findIndex((q) => q._id === questionId);
+        const optionIndex = selectedAnswers[questionId];
+        const selectedAnswer = question.options[optionIndex];
+        return { questionIndex, selectedAnswer };
+      });
+
+      await quizService.submitQuiz(quizId, formattedAnswers);
+      toast.success('Quiz submitted successfully!');
+      navigate(`/quizzes/${quizId}/results`);
+    } catch (error) {
+      toast.error(error.message || 'Failed to submit quiz.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (loading) {
@@ -148,7 +165,9 @@ const QuizTakePage = () => {
                   }`}
                 >
                   {isSelected && (
-                    <div className="w-2 h-2 bg-white rounded-full" />
+                    <div className="w-full h-full flex items-center justify-center">
+                      <div className="w-2 h-2 bg-white rounded-full" />
+                    </div>
                   )}
                 </div>
 
@@ -166,11 +185,38 @@ const QuizTakePage = () => {
                 {/* Selected Checkmark */}
                 {isSelected && (
                   <CheckCircle2
-                    className="w-5 h-5 text-emerald-500 shrink-0 ml-2"
+                    className="ml-auto w-5 h-5 text-emerald-500"
                     strokeWidth={2.5}
                   />
                 )}
               </label>
+            );
+          })}
+        </div>
+
+        {/* Question Navigation Dots */}
+        <div className="mt-6 flex items-center justify-center gap-2 flex-wrap">
+          {quiz.questions.map((_, index) => {
+            const isAnsweredQuestion = selectedAnswers.hasOwnProperty(
+              quiz.questions[index]._id
+            );
+            const isCurrent = index === currentQuestionIndex;
+
+            return (
+              <button
+                key={index}
+                onClick={() => setCurrentQuestionIndex(index)}
+                disabled={submitting}
+                className={`w-8 h-8 rounded-lg font-semibold text-xs transition-all duration-200 ${
+                  isCurrent
+                    ? 'bg-linear-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/25 scale-110'
+                    : isAnsweredQuestion
+                    ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
+              >
+                {index + 1}
+              </button>
             );
           })}
         </div>
@@ -184,25 +230,38 @@ const QuizTakePage = () => {
           disabled={currentQuestionIndex === 0}
           className="flex items-center gap-2"
         >
-          <ChevronLeft className="w-4 h-4" />
+          <ChevronLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform duration-200" />
           Previous
         </Button>
 
         {currentQuestionIndex === quiz.questions.length - 1 ? (
-          <Button
+          <button
             onClick={handleSubmitQuiz}
             disabled={submitting}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            className="group relative px-8 h-12 bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold text-sm rounded-xl transition-all duration-200 shadow-lg shadow-emerald-500/25 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 overflow-hidden"
           >
-            {submitting ? 'Submitting...' : 'Submit Quiz'}
-          </Button>
+            <span className="relative z-10 flex items-center justify-center gap-2">
+              {submitting ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Submitting...
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 className="w-4 h-4" strokeWidth={2.5} />
+                  Submit Quiz
+                </>
+              )}
+            </span>
+            <div className="absolute inset-0 bg-linear-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+          </button>
         ) : (
           <Button
             onClick={handleNextQuestion}
-            className="flex items-center gap-2"
+            disabled={submitting}
           >
             Next
-            <ChevronRight className="w-4 h-4" />
+            <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform duration-200" strokeWidth={2.5} />
           </Button>
         )}
       </div>
