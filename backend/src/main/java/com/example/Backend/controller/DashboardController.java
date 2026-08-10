@@ -26,7 +26,7 @@ public class DashboardController {
             @AuthenticationPrincipal UserDetails principal) {
         try {
             String username = principal.getUsername();
-            SUser user = userRepository.findByUsername(username)
+            SUser user = userRepository.findByUsernameOrEmail(username, username)
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
             Map<String, Object> data = progressService.getDashboardData(user.getUserId(), username);
