@@ -82,12 +82,16 @@ public class FlashcardGenService {
     }
 
     public Flashcard generateAndSaveFromVectorStore(String userId, String documentId, int count) {
-        List<Document> docs = vectorStore.similaritySearch(
-                SearchRequest.builder()
-                        .query("key concepts and summaries")
-                        .topK(4)
-                        .build()
-        );
+        SearchRequest.Builder searchRequestBuilder = SearchRequest.builder()
+                .query("key concepts and summaries")
+                .topK(8)
+                .similarityThreshold(0.0);
+
+        if (documentId != null && !documentId.isBlank()) {
+            searchRequestBuilder.filterExpression("documentId == '" + documentId + "'");
+        }
+
+        List<Document> docs = vectorStore.similaritySearch(searchRequestBuilder.build());
 
         List<String> textChunks = docs.stream()
                 .map(Document::getText)

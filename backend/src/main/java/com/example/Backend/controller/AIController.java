@@ -60,7 +60,7 @@ public class AIController {
 
         if (request.documentId() != null && !request.documentId().isBlank()) {
             searchRequestBuilder.filterExpression(
-                    "document_id == '" + request.documentId() + "'"
+                    "documentId == '" + request.documentId() + "'"
             );
         }
 
