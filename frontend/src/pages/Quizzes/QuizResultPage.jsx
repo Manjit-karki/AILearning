@@ -99,6 +99,138 @@ const QuizResultPage = () => {
             {getScoreMessage(score)}
           </p>
         </div>
+
+        {/* Stats */}
+        <div className="flex items-center justify-center gap-4 pt-4">
+          <div className="flext items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl">
+            <Target className="w-4 h-4 text-slate-600" strokeWidth={2} />
+            <span className="text-sm font-semibold text-slate-700">
+              {totalQuestions} Total
+            </span>
+          </div>
+          <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 border border-emerald-200 rounded-xl">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600" strokeWidth={2} />
+            <span className="text-sm font-semibold text-emerald-700">
+              {correctAnswers} Correct
+            </span>
+          </div>
+          <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 border border-rose-200 rounded-xl">
+            <XCircle className="w-4 h-4 text-rose-600" strokeWidth={2} />
+            <span className="text-sm font-semibold text-rose-700">
+              {incorrectAnswers} Incorrect
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Questions Review */}
+      <div className="">
+        <div className="">
+          <BookOpen className="" strokeWidth={2} />
+          <h3 className="">Detailed Review</h3>
+        </div>
+
+        {detailedResults.map((result, index) => {
+          const userAnswerIndex = result.options.findIndex(opt => opt === result.selectedAnswer);
+          const correctAnswerIndex = result.correctAnswer.startsWith('O')
+            ? parseInt(result.correctAnswer.substring(1)) - 1
+            : result.options.findIndex(opt => opt === result.correctAnswer);
+          const isCorrect = result.isCorrect;
+
+          return (
+            <div key={index} className="">
+              <div className="">
+                <div className="">
+                  <div className="">
+                    <span className="">
+                      Question {index + 1}
+                    </span>
+                  </div>
+                  <h4 className="">
+                    {result.question}
+                  </h4>
+                </div>
+                <div className={`shrink-0 w-10 h-10 rounded-xl flex items-center justify-center ${
+                  isCorrect
+                    ? 'bg-emerald-50 border-2 border-emerald-200'
+                    : 'bg-rose-50 border-2 border-rose-200'
+                }`}>
+                  {isCorrect ? (
+                    <CheckCircle2 className="" strokeWidth={2.5} />
+                  ) : (
+                    <XCircle className="" strokeWidth={2.5} />
+                  )}
+                </div>
+              </div>
+
+              <div className="">
+                {result.options.map((option, optIndex) => {
+                  const isCorrectOption = optIndex === correctAnswerIndex;
+                  const isUserAnswer = optIndex === userAnswerIndex;
+                  const isWrongAnswer = isUserAnswer && !isCorrect;
+
+                  return (
+                    <div
+                      key={optIndex}
+                      className={`relative px-4 py-3 rounded-lg border-2 transition-all duration-200 ${
+                        isCorrectOption
+                          ? 'bg-emerald-50 border-emerald-300 shadow-lg shadow-emerald-500/10'
+                          : isWrongAnswer
+                          ? 'bg-rose-50 border-rose-300'
+                          : 'bg-slate-50 border-slate-200'
+                      }`}
+                    >
+                      <div className="">
+                        <span className={`text-sm font-medium ${
+                          isCorrectOption
+                            ? 'text-emerald-900'
+                            : isWrongAnswer
+                            ? 'text-rose-900'
+                            : 'text-slate-700'
+                        }`}>
+                          {option}
+                        </span>
+                        <div className="">
+                          {isCorrectOption && (
+                            <span className="">
+                              <CheckCircle2 className="" strokeWidth={2.5} />
+                              Correct
+                            </span>
+                          )}
+                          {isWrongAnswer && (
+                            <span className="">
+                              <XCircle className="" strokeWidth={2.5} />
+                              Your Answer
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Explanation */}
+              {result.explanation && (
+                <div className="">
+                  <div className="">
+                    <div className="">
+                      <BookOpen className="" strokeWidth={2} />
+                    </div>
+                    <div className="">
+                      <p className="">
+                        Explanation
+                      </p>
+                      <p className="">
+                        {result.explanation}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
