@@ -75,4 +75,3 @@ const QuizCard = ({ quiz, onDelete }) => {
 };
 
 export default QuizCard;
-
