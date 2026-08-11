@@ -21,24 +21,24 @@ const ProfilePage = () => {
     <div>
       <PageHeader title="Profile Settings" />
 
-      <div className="">
+      <div className="space-y-8">
         {/* User Information Display */}
-        <div className="">
-          <h3 className="">
+        <div className="bg-white border border-neutral-200 rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-neutral-900 mb-4">
             User Information
           </h3>
           
-          <div className="">
+          <div className="space-y-4">
             {/* Username Section */}
             <div>
-              <label className="">
+              <label className="block text-xs font-medium text-neutral-700 mb-1.5">
                 Username
               </label>
-              <div className="">
-                <div className="">
-                  <User className="" />
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <User className="w-4 h-4 text-neutral-400" />
                 </div>
-                <p className="">
+                <p className="w-full h-9 pl-9 pr-3 pt-2 border border-neutral-200 rounded-lg bg-neutral-50 text-sm text-neutral-900">
                   {username}
                 </p>
               </div>
@@ -46,20 +46,87 @@ const ProfilePage = () => {
             
             {/* Email Section */}
             <div>
-              <label className="">
+              <label className="block text-xs font-medium text-neutral-700 mb-1.5">
                 Email Address
               </label>
-              <div className="">
-                <div className="">
-                  <Mail className="" />
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Mail className="w-4 h-4 text-neutral-400" />
                 </div>
-                <p className="">
+                <p className="w-full h-9 pl-9 pr-3 pt-2 border border-neutral-200 rounded-lg bg-neutral-50 text-sm text-neutral-900">
                   {email}
                 </p>
               </div>
             </div>
-
           </div>
+        </div>
+
+        {/* Change Password Form */}
+        <div className="">
+          <h3 className="">
+            Change Password
+          </h3>
+          <form onSubmit={handleChangePassword} className="">
+            <div>
+              <label className="">
+                Current Password
+              </label>
+              <div className="">
+                <div className="">
+                  <Lock className="" />
+                </div>
+                <input
+                  type="password"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  required
+                  className=""
+                />
+              </div>
+            </div>
+            
+            <div>
+              <label className="">
+                New Password
+              </label>
+              <div className="">
+                <div className="">
+                  <Lock className="" />
+                </div>
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  required
+                  className=""
+                />
+              </div>
+            </div>
+            
+            <div>
+              <label className="">
+                Confirm New Password
+              </label>
+              <div className="">
+                <div className="">
+                  <Lock className="" />
+                </div>
+                <input
+                  type="password"
+                  value={confirmNewPassword}
+                  onChange={(e) => setConfirmNewPassword(e.target.value)}
+                  required
+                  className=""
+                />
+              </div>
+            </div>
+            
+            <div className="">
+              <Button type="submit" disabled={passwordLoading}>
+                {passwordLoading ? "Changing..." : "Change Password"}
+              </Button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
