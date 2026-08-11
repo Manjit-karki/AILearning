@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import documentService from '../../services/documentService';
-import Spinner from '../../Components/common/Spinner';
-import toast from 'react-hot-toast';
-import { ArrowLeft, ExternalLink } from 'lucide-react';
-import PageHeader from '../../Components/common/PageHeader';
-import Tabs from '../../Components/common/Tabs';
+import { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
+import documentService from "../../services/documentService";
+import Spinner from "../../Components/common/Spinner";
+import toast from "react-hot-toast";
+import { ArrowLeft, ExternalLink } from "lucide-react";
+import PageHeader from "../../Components/common/PageHeader";
+import Tabs from "../../Components/common/Tabs";
+import QuizManager from "../../Components/quizzes/QuizManager";
 
 const DocumentDetailPage = () => {
   const { id } = useParams();
   const [document, setDocument] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('Content');
+  const [activeTab, setActiveTab] = useState("Content");
 
   useEffect(() => {
     const fetchDocumentDetails = async () => {
@@ -19,7 +20,7 @@ const DocumentDetailPage = () => {
         const data = await documentService.getDocumentById(id);
         setDocument(data);
       } catch (error) {
-        toast.error('Failed to fetch document details.');
+        toast.error("Failed to fetch document details.");
         console.error(error);
       } finally {
         setLoading(false);
@@ -35,20 +36,30 @@ const DocumentDetailPage = () => {
 
     const filePath = document.data.filePath;
 
-    if (filePath.startsWith('http://') || filePath.startsWith('https://')) {
+    if (
+      filePath.startsWith("http://") ||
+      filePath.startsWith("https://")
+    ) {
       return filePath;
     }
 
-    const baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000';
-    return `${baseUrl}${filePath.startsWith('/') ? '' : '/'}${filePath}`;
+    const baseUrl =
+      process.env.REACT_APP_API_URL || "http://localhost:8000";
+
+    return `${baseUrl}${filePath.startsWith("/") ? "" : "/"}${filePath}`;
   };
 
   const renderContent = () => {
     if (loading) {
       return <Spinner />;
     }
-    if (!document || !document.data || !document.data.filePath) {
-      return <div className="text-center p-8">PDF not available.</div>;
+
+    if (!document?.data?.filePath) {
+      return (
+        <div className="text-center p-8">
+          PDF not available.
+        </div>
+      );
     }
 
     const pdfUrl = getPdfUrl();
@@ -56,7 +67,10 @@ const DocumentDetailPage = () => {
     return (
       <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
         <div className="flex items-center justify-between bg-gray-50 border-b border-gray-300 p-3">
-          <span className="text-sm font-medium text-gray-700">Document Viewer</span>
+          <span className="text-sm font-medium text-gray-700">
+            Document Viewer
+          </span>
+
           <a
             href={pdfUrl}
             target="_blank"
@@ -67,6 +81,7 @@ const DocumentDetailPage = () => {
             Open in new tab
           </a>
         </div>
+
         <div className="bg-gray-100 p-1">
           <iframe
             src={pdfUrl}
@@ -74,7 +89,7 @@ const DocumentDetailPage = () => {
             title="PDF Viewer"
             frameBorder="0"
             style={{
-              colorScheme: 'light',
+              colorScheme: "light",
             }}
           />
         </div>
@@ -83,27 +98,47 @@ const DocumentDetailPage = () => {
   };
 
   const renderChat = () => {
-    return 'renderChat';
+    return "renderChat";
   };
 
   const renderAIActions = () => {
-    return 'renderAIActions';
+    return "renderAIActions";
   };
 
   const renderFlashcardsTab = () => {
-    return 'renderFlashcardsTab';
+    return "renderFlashcardsTab";
   };
 
   const renderQuizzesTab = () => {
-    return <QuizManager documentId={id} />
+    return <QuizManager documentId={id} />;
   };
 
   const tabs = [
-    { name: 'Content', label: 'Content', content: renderContent() },
-    { name: 'Chat', label: 'Chat', content: renderChat() },
-    { name: 'AI Actions', label: 'AI Actions', content: renderAIActions() },
-    { name: 'Flashcards', label: 'Flashcards', content: renderFlashcardsTab() },
-    { name: 'Quizzes', label: 'Quizzes', content: renderQuizzesTab() },
+    {
+      name: "Content",
+      label: "Content",
+      content: renderContent(),
+    },
+    {
+      name: "Chat",
+      label: "Chat",
+      content: renderChat(),
+    },
+    {
+      name: "AI Actions",
+      label: "AI Actions",
+      content: renderAIActions(),
+    },
+    {
+      name: "Flashcards",
+      label: "Flashcards",
+      content: renderFlashcardsTab(),
+    },
+    {
+      name: "Quizzes",
+      label: "Quizzes",
+      content: renderQuizzesTab(),
+    },
   ];
 
   if (loading) {
@@ -111,7 +146,11 @@ const DocumentDetailPage = () => {
   }
 
   if (!document) {
-    return <div className="text-center p-8">Document not found.</div>;
+    return (
+      <div className="text-center p-8">
+        Document not found.
+      </div>
+    );
   }
 
   return (
@@ -125,8 +164,14 @@ const DocumentDetailPage = () => {
           Back to Documents
         </Link>
       </div>
+
       <PageHeader title={document.data.title} />
-      <Tabs tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} />
+
+      <Tabs
+        tabs={tabs}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+      />
     </div>
   );
 };

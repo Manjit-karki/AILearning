@@ -1,6 +1,4 @@
-import React from 'react'
-
-const PageHeader = ({title, subtitle, children}) => {
+const PageHeader = ({ title, subtitle, children }) => {
   return (
     <div className="flex items-center justify-between mb-6">
       <div>
@@ -15,7 +13,7 @@ const PageHeader = ({title, subtitle, children}) => {
       </div>
       {children && <div>{children}</div>}
     </div>
-  )
-}
+  );
+};
 
-export default PageHeader
+export default PageHeader;

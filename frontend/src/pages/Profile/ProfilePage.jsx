@@ -3,7 +3,6 @@ import PageHeader from "../../Components/common/PageHeader";
 import Button from "../../Components/common/Button";
 import Spinner from "../../Components/common/Spinner";
 import authService from "../../services/authService";
-import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
 import { User, Mail, Lock } from "lucide-react";
 
@@ -30,21 +29,25 @@ const ProfilePage = () => {
         setLoading(false);
       }
     };
+
     fetchProfile();
   }, []);
 
   const handleChangePassword = async (e) => {
     e.preventDefault();
+
     if (newPassword !== confirmNewPassword) {
       toast.error("New passwords do not match.");
       return;
     }
+
     if (newPassword.length < 6) {
       toast.error("New password must be at least 6 characters long.");
       return;
     }
-    
+
     setPasswordLoading(true);
+
     try {
       await authService.changePassword({ currentPassword, newPassword });
       toast.success("Password changed successfully!");
@@ -72,7 +75,7 @@ const ProfilePage = () => {
           <h3 className="text-lg font-semibold text-neutral-900 mb-4">
             User Information
           </h3>
-          
+
           <div className="space-y-4">
             {/* Username Section */}
             <div>
@@ -88,7 +91,7 @@ const ProfilePage = () => {
                 </p>
               </div>
             </div>
-            
+
             {/* Email Section */}
             <div>
               <label className="block text-xs font-medium text-neutral-700 mb-1.5">
@@ -111,6 +114,7 @@ const ProfilePage = () => {
           <h3 className="text-lg font-semibold text-neutral-900 mb-4">
             Change Password
           </h3>
+
           <form onSubmit={handleChangePassword} className="space-y-4">
             <div>
               <label className="block text-xs font-medium text-neutral-700 mb-1.5">
@@ -129,7 +133,7 @@ const ProfilePage = () => {
                 />
               </div>
             </div>
-            
+
             <div>
               <label className="block text-xs font-medium text-neutral-700 mb-1.5">
                 New Password
@@ -147,7 +151,7 @@ const ProfilePage = () => {
                 />
               </div>
             </div>
-            
+
             <div>
               <label className="block text-xs font-medium text-neutral-700 mb-1.5">
                 Confirm New Password
@@ -165,7 +169,7 @@ const ProfilePage = () => {
                 />
               </div>
             </div>
-            
+
             <div className="flex justify-end">
               <Button type="submit" disabled={passwordLoading}>
                 {passwordLoading ? "Changing..." : "Change Password"}

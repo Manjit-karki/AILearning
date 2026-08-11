@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { Sparkles, BookOpen, Lightbulb } from "lucide-react";
 import aiService from "../../services/aiService";
 import toast from "react-hot-toast";
-import Modal from '../common/Modal';
+import Modal from "../common/Modal";
 import MarkdownRenderer from "../common/MarkdownRenderer";
 
 const AIAction = () => {
@@ -14,7 +14,7 @@ const AIAction = () => {
   const [modalTitle, setModalTitle] = useState("");
   const [concept, setConcept] = useState("");
 
-  const handleGenerateSummary = async (e) => {
+  const handleGenerateSummary = async () => {
     setLoadingAction("summary");
     try {
       const { summary } = await aiService.generateSummary(documentId);
@@ -54,9 +54,9 @@ const AIAction = () => {
   return (
     <>
       <div className="bg-white/80 backdrop-blur-xl border border-slate-200/60 rounded-2xl shadow-xl shadow-slate-200/50 overflow-hidden">
-        <div className="px-6 py-5 border-b border-slate-200/60 bg-linear-tobr from-slate-50/50 to-white/50">
+        <div className="px-6 py-5 border-b border-slate-200/60 bg-gradient-to-br from-slate-50/50 to-white/50">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-linear-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-purple-500/25 flex items-center justify-center ">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-purple-500/25 flex items-center justify-center">
               <Sparkles className="w-5 h-5 text-white" strokeWidth={2} />
             </div>
           </div>
@@ -69,11 +69,11 @@ const AIAction = () => {
       </div>
 
       <div className="p-6 space-y-6">
-        <div className="group p-5 bg-linear-to-br from-slate-50/50 to-white rounded-xl border border-slate-200/60 hover:border-slate-300/60 hover:shadow-md transition-all duration-200">
+        <div className="group p-5 bg-gradient-to-br from-slate-50/50 to-white rounded-xl border border-slate-200/60 hover:border-slate-300/60 hover:shadow-md transition-all duration-200">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
-                <div className="w-8 h-8 rounded-lg bg-linear-to-br from-blue-100 to-cyan-100 flex items-center justify-center ">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-100 to-cyan-100 flex items-center justify-center">
                   <BookOpen className="w-4 h-4 text-blue-600" strokeWidth={2} />
                 </div>
                 <h4 className="font-semibold text-slate-900">
@@ -87,7 +87,7 @@ const AIAction = () => {
             <button
               onClick={handleGenerateSummary}
               disabled={loadingAction === "summary"}
-              className="shrink-0 h-10 px-5 bg-linear-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-600 text-white text-sm font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-blue-500/25 disabled:opacity-50 disabled:cursor-not-allowed active:scale-90"
+              className="shrink-0 h-10 px-5 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-600 text-white text-sm font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-blue-500/25 disabled:opacity-50 disabled:cursor-not-allowed active:scale-90"
             >
               {loadingAction === "summary" ? (
                 <span className="flex items-center gap-2">
@@ -100,10 +100,10 @@ const AIAction = () => {
             </button>
           </div>
 
-          <div className="group p-5 bg-linear-to-br from-slate-50/50 to-white rounded-xl border border-slate-200/60 hover:border-slate-300/60 hover:shadow-md transition-all duration-200">
+          <div className="group p-5 bg-gradient-to-br from-slate-50/50 to-white rounded-xl border border-slate-200/60 hover:border-slate-300/60 hover:shadow-md transition-all duration-200">
             <form onSubmit={handleExplainConcept}>
               <div className="flex items-center gap-2 mb-3">
-                <div className="w-8 h-8 rounded-lg bg-linear-to-br from-amber-100 to-orange-100 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center">
                   <Lightbulb
                     className="w-4 h-4 text-amber-600"
                     strokeWidth={2}
@@ -111,8 +111,7 @@ const AIAction = () => {
                 </div>
                 <div>
                   <h4 className="font-semibold text-slate-900">
-                    {" "}
-                    Explain a Concept{" "}
+                    Explain a Concept
                   </h4>
                 </div>
                 <p className="text-sm text-slate-600 leading-relaxed mb-4">
@@ -129,8 +128,8 @@ const AIAction = () => {
                   />
                   <button
                     type="submit"
-                    disabled={loadingAction === "explain" || !concept.trin()}
-                    className="shrink-0 h-11 px-5 bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-600 hover:to-emerald-600 text-white text-sm font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-purple-500/25 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
+                    disabled={loadingAction === "explain" || !concept.trim()}
+                    className="shrink-0 h-11 px-5 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-600 hover:to-emerald-600 text-white text-sm font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-purple-500/25 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
                   >
                     {loadingAction === "explain" ? (
                       <span className="flex items-center gap-2">
@@ -154,7 +153,7 @@ const AIAction = () => {
         title={modalTitle}
       >
         <div className="max-h-[60vh] overflow-y-auto prose prose-sm max-w-none prose-slate">
-          <MarkdownRenderer concent={modalContent} />
+          <MarkdownRenderer content={modalContent} />
         </div>
       </Modal>
     </>

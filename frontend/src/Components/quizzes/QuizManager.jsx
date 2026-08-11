@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, Trash2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Plus } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 import quizService from '../../services/quizService';
@@ -7,6 +7,7 @@ import aiService from '../../services/aiService';
 import Spinner from '../common/Spinner';
 import Button from '../common/Button';
 import Modal from '../common/Modal';
+import EmptyState from '../common/EmptyState';
 import QuizCard from './QuizCard';
 
 const QuizManager = ({ documentId }) => {
@@ -128,7 +129,7 @@ const QuizManager = ({ documentId }) => {
               }
               min="1"
               required
-              className="w-full h-9 px-3 border border-neutral-300 rounded-lg bg-white text-sm text-neutral-900 placeholder-neutral-400 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-[#00d492] focus-border-transparent"
+              className="w-full h-9 px-3 border border-neutral-300 rounded-lg bg-white text-sm text-neutral-900 placeholder-neutral-400 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-[#00d492] focus:border-transparent"
             />
           </div>
           <div className="flex justify-end gap-2 pt-2">
