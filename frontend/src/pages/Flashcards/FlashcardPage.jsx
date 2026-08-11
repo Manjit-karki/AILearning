@@ -10,13 +10,13 @@ import {
 import toast from "react-hot-toast";
 
 import flashcardService from "../../services/flashcardService";
-import aiService from "../../services/aiSerivce";
+import aiService from "../../services/aiService";
 import PageHeader from "../../Components/common/PageHeader";
 import Spinner from "../../Components/common/Spinner";
 import EmptyState from "../../Components/common/EmptyState";
 import Button from "../../Components/common/Button";
 import Modal from "../../Components/common/Modal";
-import Flashcard from "../../Component/flashcards/Flashcard";
+import Flashcard from "../../Components/flashcards/Flashcard";
 
 const FlashcardPage = () => {
   const { id: documentId } = useParams();

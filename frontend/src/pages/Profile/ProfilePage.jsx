@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import PageHeader from "../../components/common/PageHeader";
-import Button from "../../components/common/Button";
-import Spinner from "../../components/common/Spinner";
+import PageHeader from "../../Components/common/PageHeader";
+import Button from "../../Components/common/Button";
+import Spinner from "../../Components/common/Spinner";
 import authService from "../../services/authService";
 import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
